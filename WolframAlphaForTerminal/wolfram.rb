@@ -9,6 +9,23 @@ appid_input = ""
 width = `tput cols`.chomp.to_i
 path = File.expand_path(File.dirname(__FILE__))
 
+def loadingAnimation
+  i = 0
+  frames = ["...", " ..", ". .", ".. "]
+  ldAnim = Thread.new do
+    while (i > -1) do
+      print frames[(i%4)]
+      sleep 0.1
+      i += 1
+      print "\b\b\b"
+    end
+  end
+  yield.tap {
+    i = -100
+    ldAnim.join
+  }
+end
+
 def printXML (path, width)
   xml = REXML::Document.new(open("#{path}/wolfram.xml"))
   xml.elements.each('queryresult/pod') do |pod|
@@ -18,6 +35,7 @@ def printXML (path, width)
       next if (subpod.elements['plaintext'].text == nil)
       ptext = subpod.elements['plaintext'].text
       ptext.each_line do |pline|
+        next if (pline == "\n")
         if (pline.length > (width-6))
           puts "    • #{pline[0, (width-6)]}"
           pline = pline[(width-6), pline.length-(width-6)]
@@ -89,8 +107,6 @@ while true do
   query.gsub!("\\", "\\\\\\")
   query.gsub!("\"", "\\\"")
   query.gsub!("\'", "\\\'")
-
-  print "Calculating \"#{query}\"...\r"
   
   query_title = query
   if (query_title.length > 24)
@@ -101,17 +117,20 @@ while true do
       query_title = (i % 2 == 0) ? "#{query_title} " : " #{query_title}"
     end
   end
+
+  print "Calculating \"#{query}\""
+  loadingAnimation {
+    system("curl -Ls --data-urlencode \"input=#{query}\" -d \"appid=#{appid}&format=plaintext\" \"http://api.wolframalpha.com/v2/query\" #{proxy} -o #{path}/wolfram.xml")
+  }
   
-  system("curl -Ls --data-urlencode \"input=#{query}\" -d \"appid=#{appid}&format=plaintext\" \"http://api.wolframalpha.com/v2/query\" #{proxy} -o #{path}/wolfram.xml")
-  
-  print " "
+  print "\r "
   26.times{print "_"}
   (width-27).times{print " "}
   print "\n"
   print "/ #{query_title} \\"
   (width-28).times{print "_"}
   print "\n\n"
-
+  
   printXML(path, width)
   system("rm #{path}/wolfram.xml")
   
