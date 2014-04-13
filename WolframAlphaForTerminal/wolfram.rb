@@ -156,12 +156,24 @@ loop do
   # "pi"
   if (xml.elements['queryresult/assumptions'] != nil)
     cnt = 0
-    assumption = xml.elements['queryresult/assumptions/assumption']
-    print "> Assuming \"#{assumption.attributes['word']}\" is "
-    assumption.elements.each('value') do |value|
+    assumptions = xml.elements['queryresult/assumptions']
+    assumptions.elements.each('assumption') do |assumption|
+      if (assumptions.attributes['count'] == "1")
+        assumption.elements.each('value') do |value|
+          break if (cnt != 0)
+          msg = "> Assuming \"#{assumption.attributes['word']}\" is"
+          puts "#{msg} #{value.attributes['desc']}."
+          cnt += 1
+        end
+      end
+      if (assumption.attributes['type'] == "FormulaSelect")
+        assumption.elements.each('value') do |value|
+          break if (cnt != 0)
+          puts "> Reinterpreted as #{value.attributes['desc']}."
+          cnt += 1
+        end
+      end
       break if (cnt != 0)
-      puts "#{value.attributes['desc']}."
-      cnt += 1
     end
   end
   
