@@ -3,8 +3,6 @@ require 'cgi'
 require 'readline'
 require 'rexml/document'
 
-
-
 # methods
 def loadingAnimation
   i = 0
@@ -90,16 +88,12 @@ def welcome_screen
   puts "\t\t(TYPE :q AND HIT RETURN FOR QUIT)\n\n"
 end
 
-
-
 # variables
 count = 0
 proxy = ""
 url = "http://api.wolframalpha.com/v2/query"
 width = `tput cols`.chomp.to_i
 path = File.expand_path(File.dirname(__FILE__))
-
-
 
 # main routine
 wa_appid_input unless (File.exist?("#{path}/wa-appid"))
@@ -161,18 +155,14 @@ loop do
 
   # "pi"
   if (xml.elements['queryresult/assumptions'] != nil)
+    cnt = 0
     assumption = xml.elements['queryresult/assumptions/assumption']
     print "> Assuming \"#{assumption.attributes['word']}\" is "
-    cnt = 0
     assumption.elements.each('value') do |value|
-      if cnt == 0
-        print "#{value.attributes['desc']}.\n> Use as "
-      else
-        print "#{value.attributes['desc']} or "
-      end
+      break if (cnt != 0)
+      puts "#{value.attributes['desc']}."
       cnt += 1
     end
-    puts "\b\b\b\b.   "
   end
   
   if (query_title.length > 24)
