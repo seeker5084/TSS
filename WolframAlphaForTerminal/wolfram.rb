@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
+require 'cgi'
 require 'readline'
 require 'rexml/document'
 
-count = 0
-choice = ""
-proxy = ""
-appid_input = ""
-width = `tput cols`.chomp.to_i
-path = File.expand_path(File.dirname(__FILE__))
 
+
+# methods
 def loadingAnimation
   i = 0
   frames = ["...", " ..", ". .", ".. "]
@@ -20,14 +17,17 @@ def loadingAnimation
       print "\b\b\b"
     end
   end
-  yield.tap {
+  yield.tap do
     i = -100
     ldAnim.join
-  }
+  end
 end
 
-def printXML (path, width)
-  xml = REXML::Document.new(open("#{path}/wolfram.xml"))
+def printXML (xml, path, width)
+  if (xml.elements['queryresult/futuretopic'] != nil)
+    puts xml.elements['queryresult/futuretopic'].attributes['msg']
+    return
+  end
   xml.elements.each('queryresult/pod') do |pod|
     next if (pod.elements['subpod/plaintext'].text == nil)
     puts "[#{pod.attributes['title']}]"
@@ -52,7 +52,9 @@ def printXML (path, width)
   end
 end
 
-if (!File.exist?("#{path}/wa-appid"))
+def wa_appid_input
+  choice = ""
+  appid_input = ""
   puts "\nTo activate this application, you need to get your own App-ID."
   print "You can get it from \"http://developer.wolframalpha.com\".\n"
   loop do
@@ -70,45 +72,109 @@ if (!File.exist?("#{path}/wa-appid"))
   open("#{path}/wa-appid", "w") {|f| f.write appid_input}
 end
 
+def welcome_screen
+  puts "\nWELCOME TO...\n\n"
+  puts "██╗    ██╗ ██████╗ ██╗     ███████╗██████╗  █████╗ ███╗   ███╗"
+  puts "██║    ██║██╔═══██╗██║     ██╔════╝██╔══██╗██╔══██╗████╗ ████║"
+  puts "██║ █╗ ██║██║   ██║██║     █████╗  ██████╔╝███████║██╔████╔██║"
+  puts "██║███╗██║██║   ██║██║     ██╔══╝  ██╔══██╗██╔══██║██║╚██╔╝██║"
+  puts "╚███╔███╔╝╚██████╔╝███████╗██║     ██║  ██║██║  ██║██║ ╚═╝ ██║"
+  puts " ╚══╝╚══╝  ╚═════╝ ╚══════╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝\n"
+  puts "\t █████╗ ██╗     ██████╗ ██╗  ██╗ █████╗"
+  puts "\t██╔══██╗██║     ██╔══██╗██║  ██║██╔══██╗ (R)"
+  puts "\t███████║██║     ██████╔╝███████║███████║"
+  puts "\t██╔══██║██║     ██╔═══╝ ██╔══██║██╔══██║"
+  puts "\t██║  ██║███████╗██║     ██║  ██║██║  ██║"
+  puts "\t╚═╝  ╚═╝╚══════╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝\n\n"
+  puts "\t\tCOMPUTATION[TM], KNOWLEDGE ENGINE"
+  puts "\t\t(TYPE :q AND HIT RETURN FOR QUIT)\n\n"
+end
+
+
+
+# variables
+count = 0
+proxy = ""
+url = "http://api.wolframalpha.com/v2/query"
+width = `tput cols`.chomp.to_i
+path = File.expand_path(File.dirname(__FILE__))
+
+
+
+# main routine
+wa_appid_input unless (File.exist?("#{path}/wa-appid"))
 f = open("#{path}/wa-appid", "r")
 appid = f.gets
 f.close
-
-puts "\nWELCOME TO...\n\n"
-puts "██╗    ██╗ ██████╗ ██╗     ███████╗██████╗  █████╗ ███╗   ███╗"
-puts "██║    ██║██╔═══██╗██║     ██╔════╝██╔══██╗██╔══██╗████╗ ████║"
-puts "██║ █╗ ██║██║   ██║██║     █████╗  ██████╔╝███████║██╔████╔██║"
-puts "██║███╗██║██║   ██║██║     ██╔══╝  ██╔══██╗██╔══██║██║╚██╔╝██║"
-puts "╚███╔███╔╝╚██████╔╝███████╗██║     ██║  ██║██║  ██║██║ ╚═╝ ██║"
-puts " ╚══╝╚══╝  ╚═════╝ ╚══════╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝\n"
-puts "\t █████╗ ██╗     ██████╗ ██╗  ██╗ █████╗"
-puts "\t██╔══██╗██║     ██╔══██╗██║  ██║██╔══██╗ (R)"
-puts "\t███████║██║     ██████╔╝███████║███████║"
-puts "\t██╔══██║██║     ██╔═══╝ ██╔══██║██╔══██║"
-puts "\t██║  ██║███████╗██║     ██║  ██║██║  ██║"
-puts "\t╚═╝  ╚═╝╚══════╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝\n\n"
-puts "\t\tCOMPUTATION[TM], KNOWLEDGE ENGINE"
-puts "\t\t(TYPE :q AND HIT RETURN FOR QUIT)\n\n"
-
+welcome_screen
 unless (ARGV[0].nil?)
   proxy = "-x #{ARGV[0]}"
   puts "Connecting via proxy(#{ARGV[0]})\n\n"
 end
 
-while true do
-  
+loop do
   query = Readline::readline("[#{count}] = ", true)
   if (query == ':q')
     puts "\nBYE...\n\n"
     break
   end
   
-  query.gsub!("\`", "\\\`")
-  query.gsub!("\\", "\\\\\\")
-  query.gsub!("\"", "\\\"")
-  query.gsub!("\'", "\\\'")
-  
   query_title = query
+  query = query.gsub("\\", "\\[Backslash]")
+  query = query.gsub("\`", "\\[RawBackquote]")
+  query = query.gsub("\"", "\\[RawDoubleQuote]")
+  query = query.gsub("\'", "\\[OpenCurlyQuote]")
+  
+  print "Calculating \"#{query_title}\""
+  param = "--data-urlencode \"input=#{query}\""
+  param = "#{param} -d \"appid=#{appid}&format=plaintext&reinterpret=true\""
+  loadingAnimation do
+    system("curl -Ls #{param} #{url} #{proxy} -o #{path}/wolfram.xml")
+  end
+
+  print "\r"
+  width.times {print " "}
+  print "\r"
+  
+  xml = REXML::Document.new(open("#{path}/wolfram.xml"))
+
+  # "chicag -> chicago"
+  if (xml.elements['queryresult/warnings/spellcheck'] != nil)
+    spellcheck = xml.elements['queryresult/warnings/spellcheck']
+    query_title = spellcheck.attributes['suggestion']
+    msg = "Interpreting \"#{spellcheck.attributes['word']}\""
+    puts "> #{msg} as \"#{spellcheck.attributes['suggestion']}\"."
+  end
+
+  # "francee splat -> frances split"
+  if (xml.elements['queryresult/didyoumeans/didyoumean'] != nil)
+    didyoumean = xml.elements['queryresult/didyoumeans/didyoumean'].text
+    puts "> Did you mean: \"#{didyoumean}\"?"
+  end
+
+  # "bear shoe -> bear"
+  if (xml.elements['queryresult/warnings/reinterpret'] != nil)
+    reinterpret = xml.elements['queryresult/warnings/reinterpret']
+    query_title = reinterpret.attributes['new']
+    puts "> #{reinterpret.attributes['text']} #{query_title}"
+  end
+
+  # "pi"
+  if (xml.elements['queryresult/assumptions'] != nil)
+    assumption = xml.elements['queryresult/assumptions/assumption']
+    print "> Assuming \"#{assumption.attributes['word']}\" is "
+    cnt = 0
+    assumption.elements.each('value') do |value|
+      if cnt == 0
+        print "#{value.attributes['desc']}.\n> Use as "
+      else
+        print "#{value.attributes['desc']} or "
+      end
+      cnt += 1
+    end
+    puts "\b\b\b\b.   "
+  end
+  
   if (query_title.length > 24)
     query_title = query_title.slice!(0, 21)
     query_title = "#{query_title}..."
@@ -117,23 +183,17 @@ while true do
       query_title = (i % 2 == 0) ? "#{query_title} " : " #{query_title}"
     end
   end
-
-  print "Calculating \"#{query}\""
-  loadingAnimation {
-    system("curl -Ls --data-urlencode \"input=#{query}\" -d \"appid=#{appid}&format=plaintext\" \"http://api.wolframalpha.com/v2/query\" #{proxy} -o #{path}/wolfram.xml")
-  }
   
-  print "\r "
+  print " "
   26.times{print "_"}
   (width-27).times{print " "}
   print "\n"
   print "/ #{query_title} \\"
   (width-28).times{print "_"}
   print "\n\n"
-  
-  printXML(path, width)
+  printXML(xml, path, width)
+
   system("rm #{path}/wolfram.xml")
-  
   width.times{print "-"}
   print "\n\n"
   
