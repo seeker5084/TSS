@@ -50,7 +50,7 @@ def printXML (xml, path, width)
   end
 end
 
-def wa_appid_input
+def wa_appid_input (path)
   choice = ""
   appid_input = ""
   puts "\nTo activate this application, you need to get your own App-ID."
@@ -96,7 +96,7 @@ width = `tput cols`.chomp.to_i
 path = File.expand_path(File.dirname(__FILE__))
 
 # main routine
-wa_appid_input unless (File.exist?("#{path}/wa-appid"))
+wa_appid_input(path) unless (File.exist?("#{path}/wa-appid"))
 f = open("#{path}/wa-appid", "r")
 appid = f.gets
 f.close
