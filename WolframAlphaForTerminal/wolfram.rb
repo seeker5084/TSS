@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-require 'cgi'
 require 'readline'
 require 'rexml/document'
 
@@ -77,7 +76,7 @@ def welcome_screen
   puts "██║ █╗ ██║██║   ██║██║     █████╗  ██████╔╝███████║██╔████╔██║"
   puts "██║███╗██║██║   ██║██║     ██╔══╝  ██╔══██╗██╔══██║██║╚██╔╝██║"
   puts "╚███╔███╔╝╚██████╔╝███████╗██║     ██║  ██║██║  ██║██║ ╚═╝ ██║"
-  puts " ╚══╝╚══╝  ╚═════╝ ╚══════╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝\n"
+  puts " ╚══╝╚══╝  ╚═════╝ ╚══════╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝"
   puts "\t █████╗ ██╗     ██████╗ ██╗  ██╗ █████╗"
   puts "\t██╔══██╗██║     ██╔══██╗██║  ██║██╔══██╗ (R)"
   puts "\t███████║██║     ██████╔╝███████║███████║"
@@ -102,8 +101,10 @@ appid = f.gets
 f.close
 welcome_screen
 unless (ARGV[0].nil?)
-  proxy = "-x #{ARGV[0]}"
-  puts "Connecting via proxy(#{ARGV[0]})\n\n"
+  proxy = ARGV[0]
+  system "export http_proxy=\"#{proxy}\""
+  puts "Connecting via proxy(#{proxy})\n\n"
+  proxy = "-x #{proxy}"
 end
 
 loop do
@@ -202,3 +203,5 @@ loop do
   count += 1
   
 end
+
+system "export http_proxy=\"\""
