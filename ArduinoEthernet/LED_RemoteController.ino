@@ -16,7 +16,8 @@ int ledPin =  9;
 
 // IPアドレスは他のネットワーク機器と同じにならないように注意.
 byte  ip[] = {192, 168, 11, 22};
-byte mac[] = {0x90, 0xA2, 0xDA, 0x0D, 0x03, 0x7B};
+// MACアドレスはEthernetシールドに記載されているので2桁づつココへ記入.
+byte mac[] = {0x12, 0x34, 0x56, 0x78, 0x9A, 0xBC};
 
 // ポート80(HTTP)で通信をするサーバを初期化.
 EthernetServer server = EthernetServer(80);
