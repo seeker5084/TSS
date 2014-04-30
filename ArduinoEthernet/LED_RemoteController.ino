@@ -34,7 +34,7 @@ void setup()
   
   Serial.begin(9600);
   while(!Serial) ; // シリアルポートの接続が確立されるまでここで待機.
-  Serial.print("\rI'm at ");
+  Serial.print("I'm at ");
   Serial.println(Ethernet.localIP());
 }
 
@@ -95,18 +95,21 @@ void connectingSequence(EthernetClient client)
         // GETパラメタの有無を調べるため,リクエストの先頭行を取得.
         firstLineOfRequest += c;
       }
-    } // end of if-statement
+    } // if文の閉じカッコ
     
-  } // end of while-statement
+  } // while文の閉じカッコ
 }
 
 
 
 void changeOutputPinsStatusBasedOn(String firstLineOfRequest)
 {
-  int getParamIndex = firstLineOfRequest.indexOf('?') + 1; // '?'の次からがGETパラメタ.
+  // '?'の次からがGETパラメタ.
+  int getParamIndex = firstLineOfRequest.indexOf('?') + 1;
+  // '='がGETパラメタのキーと値の境目.
   int getEqualIndex = firstLineOfRequest.indexOf('=');
-  int delimiterIndex = firstLineOfRequest.indexOf(' ', getParamIndex+1); // 区切り文字' 'より1つ前までがパラメタ.
+  // 区切り文字' 'より1つ前までがGETパラメタ.
+  int delimiterIndex = firstLineOfRequest.indexOf(' ', getParamIndex+1);
   
   String getKey = firstLineOfRequest.substring(getParamIndex, getEqualIndex);
   String getValue = firstLineOfRequest.substring(getEqualIndex+1, delimiterIndex);
