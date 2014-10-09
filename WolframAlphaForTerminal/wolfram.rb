@@ -2,6 +2,14 @@
 require 'readline'
 require 'rexml/document'
 
+# variables
+count = 0
+proxy = ""
+url = "http://api.wolframalpha.com/v2/query"
+width = `tput cols`.chomp.to_i
+path = File.expand_path(File.dirname(__FILE__))
+appid_file = "#{path}/.wolfram_alpha_appid"
+
 # methods
 def loadingAnimation
   i = 0
@@ -49,7 +57,7 @@ def printXML (xml, path, width)
   end
 end
 
-def wa_appid_input (path)
+def wa_appid_input (appid_file)
   choice = ""
   appid_input = ""
   puts "\nTo activate this application, you need to get your own App-ID."
@@ -66,7 +74,7 @@ def wa_appid_input (path)
     end
     break if (choice =~ /[y]/i)
   end
-  open("#{path}/wa-appid", "w") {|f| f.write appid_input}
+  open(appid_file, "w") {|f| f.write appid_input}
 end
 
 def welcome_screen
@@ -87,16 +95,9 @@ def welcome_screen
   puts "\t\t(TYPE :q AND HIT RETURN FOR QUIT)\n\n"
 end
 
-# variables
-count = 0
-proxy = ""
-url = "http://api.wolframalpha.com/v2/query"
-width = `tput cols`.chomp.to_i
-path = File.expand_path(File.dirname(__FILE__))
-
 # main routine
-wa_appid_input(path) unless (File.exist?("#{path}/wa-appid"))
-f = open("#{path}/wa-appid", "r")
+wa_appid_input(appid_file) unless (File.exist?(appid_file))
+f = open(appid_file, "r")
 appid = f.gets
 f.close
 welcome_screen
@@ -113,13 +114,13 @@ loop do
     puts "\nBYE...\n\n"
     break
   end
-  
+
   query_title = query
   query = query.gsub("\\", "\\[Backslash]")
   query = query.gsub("\`", "\\[RawBackquote]")
   query = query.gsub("\"", "\\[RawDoubleQuote]")
   query = query.gsub("\'", "\\[OpenCurlyQuote]")
-  
+
   print "Calculating \"#{query_title}\""
   param = "--data-urlencode \"input=#{query}\""
   param = "#{param} -d \"appid=#{appid}&format=plaintext&reinterpret=true\""
@@ -130,7 +131,7 @@ loop do
   print "\r"
   width.times {print " "}
   print "\r"
-  
+
   xml = REXML::Document.new(open("#{path}/wolfram.xml"))
 
   # "chicag -> chicago"
@@ -177,7 +178,7 @@ loop do
       break if (cnt != 0)
     end
   end
-  
+
   if (query_title.length > 24)
     query_title = query_title.slice!(0, 21)
     query_title = "#{query_title}..."
@@ -186,7 +187,7 @@ loop do
       query_title = (i % 2 == 0) ? "#{query_title} " : " #{query_title}"
     end
   end
-  
+
   print " "
   26.times{print "_"}
   (width-27).times{print " "}
@@ -199,9 +200,9 @@ loop do
   system("rm #{path}/wolfram.xml")
   width.times{print "-"}
   print "\n\n"
-  
+
   count += 1
-  
+
 end
 
 system "export http_proxy=\"\""
