@@ -1,7 +1,7 @@
 # [Project Painter](http://vimeo.com/108761142)
 
 ## LICENSE
-These source-codes are released under the MIT License, see ```LICENSE``` file.
+These source-codes are released under the MIT License, see [LICENSE](https://github.com/seeker5084/TSS/blob/master/Project%20Painter/src/LICENSE) file.
 
 ## ADDONS
  * ofxOpenNI: [https://github.com/gameoverhack/ofxOpenNI](https://github.com/gameoverhack/ofxOpenNI)
