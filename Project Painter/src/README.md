@@ -1,6 +1,6 @@
 # [Project Painter](http://vimeo.com/108761142)
 
-## LICESE
+## LICENSE
 These source-codes are released under the MIT License, see ```LICENSE``` file.
 
 ## ADDONS
