@@ -1,5 +1,5 @@
-A Repository for "The Strange Storage" which is my weblog.
+A Repository for my weblog "The Strange Storage".
 
 Those source-codes are released under the MIT License, see each "LICENSE" file.
 
-http://strange-storage-5084.blogspot.jp
+http://storange.jp
