@@ -114,7 +114,7 @@ void changeOutputPinsStatusBasedOn(String firstLineOfRequest)
   String getKey = firstLineOfRequest.substring(getParamIndex, getEqualIndex);
   String getValue = firstLineOfRequest.substring(getEqualIndex+1, delimiterIndex);
   
-  int pinNum = getKey.toInt();
+  ledPin = getKey.toInt();
   
   Serial.print("key is '");
   Serial.print(getKey);
@@ -122,8 +122,8 @@ void changeOutputPinsStatusBasedOn(String firstLineOfRequest)
   Serial.print(getValue);
   Serial.println("'.");
   
-  if (getValue == "ON" ) {digitalWrite(pinNum, HIGH); Serial.println("ON!");}
-  if (getValue == "OFF") {digitalWrite(pinNum,  LOW); Serial.println("OFF");}
+  if (getValue == "ON" ) {digitalWrite(ledPin, HIGH); Serial.println("ON!");}
+  if (getValue == "OFF") {digitalWrite(ledPin,  LOW); Serial.println("OFF");}
 }
 
 
