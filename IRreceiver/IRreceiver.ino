@@ -43,7 +43,7 @@ void setup()
 
 
 void loop()
-  {
+{
   // ボタンが押されたら(buttonStateがHIGHになったら),信号を送信する
   int buttonState = !digitalRead(BUTTON_PIN);
   
