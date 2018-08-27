@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+require 'cgi'
 require 'readline'
 require 'rexml/document'
 
@@ -8,7 +9,6 @@ proxy = ""
 url = "http://api.wolframalpha.com/v2/query"
 width = `tput cols`.chomp.to_i
 path = File.expand_path(File.dirname(__FILE__))
-appid_file = "#{path}/.wolfram_alpha_appid"
 
 # methods
 def loadingAnimation
@@ -28,7 +28,7 @@ def loadingAnimation
   end
 end
 
-def printXML (xml, path, width)
+def printXML(xml, path, width)
   if (xml.elements['queryresult/futuretopic'] != nil)
     puts xml.elements['queryresult/futuretopic'].attributes['msg']
     return
@@ -57,7 +57,7 @@ def printXML (xml, path, width)
   end
 end
 
-def wa_appid_input (appid_file)
+def wa_appid_input(path)
   choice = ""
   appid_input = ""
   puts "\nTo activate this application, you need to get your own App-ID."
@@ -74,7 +74,7 @@ def wa_appid_input (appid_file)
     end
     break if (choice =~ /[y]/i)
   end
-  open(appid_file, "w") {|f| f.write appid_input}
+  File.open("#{path}/.wa-appid", "w") {|f| f.write appid_input}
 end
 
 def welcome_screen
@@ -84,7 +84,7 @@ def welcome_screen
   puts "██║ █╗ ██║██║   ██║██║     █████╗  ██████╔╝███████║██╔████╔██║"
   puts "██║███╗██║██║   ██║██║     ██╔══╝  ██╔══██╗██╔══██║██║╚██╔╝██║"
   puts "╚███╔███╔╝╚██████╔╝███████╗██║     ██║  ██║██║  ██║██║ ╚═╝ ██║"
-  puts " ╚══╝╚══╝  ╚═════╝ ╚══════╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝"
+  puts " ╚══╝╚══╝  ╚═════╝ ╚══════╝╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝     ╚═╝\n"
   puts "\t █████╗ ██╗     ██████╗ ██╗  ██╗ █████╗"
   puts "\t██╔══██╗██║     ██╔══██╗██║  ██║██╔══██╗ (R)"
   puts "\t███████║██║     ██████╔╝███████║███████║"
@@ -96,16 +96,14 @@ def welcome_screen
 end
 
 # main routine
-wa_appid_input(appid_file) unless (File.exist?(appid_file))
-f = open(appid_file, "r")
+wa_appid_input(path) unless (File.exist?("#{path}/.wa-appid"))
+f = open("#{path}/.wa-appid", "r")
 appid = f.gets
 f.close
 welcome_screen
 unless (ARGV[0].nil?)
-  proxy = ARGV[0]
-  system "export http_proxy=\"#{proxy}\""
-  puts "Connecting via proxy(#{proxy})\n\n"
-  proxy = "-x #{proxy}"
+  proxy = "-x #{ARGV[0]}"
+  puts "Connecting via proxy(#{ARGV[0]})\n\n"
 end
 
 loop do
@@ -204,5 +202,3 @@ loop do
   count += 1
 
 end
-
-system "export http_proxy=\"\""
