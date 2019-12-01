@@ -3,7 +3,8 @@ import pyvips
 from os import path
 from glob import glob
 
-croppedName = " (cropped)";
+threshold = 10
+croppedName = " (cropped)"
 
 for filename in sys.argv[1:]:
 
@@ -12,7 +13,7 @@ for filename in sys.argv[1:]:
     im = pyvips.Image.new_from_file(filename)
 
     background = im(0, 0)
-    mask = (im.median(3) - background).abs() > 10
+    mask = (im.median(3) - background).abs() > threshold
     columns, rows = mask.project()
 
     left = columns.profile()[1].min()
