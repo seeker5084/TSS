@@ -20,7 +20,7 @@ https://www.youtube.com/watch?v=jw3e7meJi9g
 ## Download
 
 Download "View Source Code" shortcut via iCloud link.
-https://www.icloud.com/shortcuts/2d2df94828334ced97f50264b640d656
+https://www.icloud.com/shortcuts/748cd990e98843879adb91a63f410ed5
 
 ## Screenshot
 
