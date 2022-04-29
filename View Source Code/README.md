@@ -1,5 +1,9 @@
 # View Source Code
 
+Blog article about this (Japanese only)
+
+[iPadやiPhoneのSafariでWebページのソースコードを見る方法 | The Strange Storage](https://www.storange.jp/2021/02/view-source-code-shortcuts.html)
+
 ## What is this?
 
 This is a shortcut for iOS/iPadOS that allows you to view the source code of the webpage your browsing on Safari. The source codes are cleanly highlighted and beautified using “Prism.js” and “js-beautify”.
@@ -16,7 +20,7 @@ https://www.youtube.com/watch?v=jw3e7meJi9g
 ## Download
 
 Download "View Source Code" shortcut via iCloud link.
-https://www.icloud.com/shortcuts/2d2df94828334ced97f50264b640d656
+https://www.icloud.com/shortcuts/748cd990e98843879adb91a63f410ed5
 
 ## Screenshot
 
