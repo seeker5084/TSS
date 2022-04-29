@@ -18,4 +18,4 @@
 
 ## 記事を読む
 
-[UNIX時間による季節判定 (https://www.storange.jp/2022/04/normalized-unix-time.html)](https://www.storange.jp/2022/04/normalized-unix-time.html)
+[UNIX時間による季節判定 (https://www.storange.jp/2022/04/blog-post.html)](https://www.storange.jp/2022/04/blog-post.html)
